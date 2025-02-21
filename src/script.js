@@ -1,4 +1,5 @@
-import '../src/output.css'; // Укажите правильный путь к вашему CSS-файлу
+import "../src/output.css"; // Укажите правильный путь к вашему CSS-файлу
+import "animate.css";
 
 const newTaskForm = document.getElementById("newTaskForm");
 const newTaskInput = document.getElementById("newTaskInput");
@@ -20,6 +21,7 @@ function saveTasks() {
 // Функция для создания элемента задачи
 function createTaskElement(task) {
     const taskDiv = document.createElement("button");
+    taskDiv.setAttribute("data-task-id", task.id); // Добавляем атрибут
     taskDiv.classList.add(
         "bg-[#101826]",
         "text-white",
@@ -35,14 +37,18 @@ function createTaskElement(task) {
     const taskTextElement = document.createElement("span");
     taskTextElement.textContent = task.text;
 
-    // Добавляем класс, если задача выполнена
     if (task.completed) {
         taskTextElement.classList.add("line-through", "opacity-50");
     }
 
-    // Обработчик клика по задаче (переключение статуса)
     taskDiv.addEventListener("click", function () {
-        toggleComplete(task.id); // Переключаем статус задачи
+        toggleComplete(task.id);
+
+        // Анимация при переключении статуса
+        taskDiv.classList.add("animate__animated", "animate__flipInX");
+        taskDiv.addEventListener("animationend", () => {
+            taskDiv.classList.remove("animate__flipInX");
+        });
     });
 
     const buttons = document.createElement("div");
@@ -73,11 +79,12 @@ function createTaskElement(task) {
         "hover:opacity-80"
     );
 
-    // Обработчик клика по кнопке "EDIT"
     editButton.addEventListener("click", function (event) {
-        event.stopPropagation(); // Останавливаем всплытие события
+        event.stopPropagation();
 
-        // Создаем поле ввода
+        // Анимация при редактировании
+        taskDiv.classList.add("animate__animated", "animate__pulse");
+
         const inputField = document.createElement("input");
         inputField.type = "text";
         inputField.value = task.text;
@@ -88,46 +95,42 @@ function createTaskElement(task) {
             "flex-1"
         );
 
-        // Заменяем текстовый элемент на поле ввода
         taskDiv.replaceChild(inputField, taskTextElement);
-        inputField.focus(); // Устанавливаем фокус на поле ввода
+        inputField.focus();
 
-        // Флаг для отслеживания завершения редактирования
         let isEditingFinished = false;
 
-        // Функция для завершения редактирования
         const finishEditing = () => {
-            if (isEditingFinished) return; // Если редактирование уже завершено, выходим
-            isEditingFinished = true; // Устанавливаем флаг
+            if (isEditingFinished) return;
+            isEditingFinished = true;
 
             const newText = inputField.value.trim();
             if (newText !== "") {
-                task.text = newText; // Обновляем текст задачи
-                taskTextElement.textContent = newText; // Обновляем текстовый элемент
+                task.text = newText;
+                taskTextElement.textContent = newText;
             }
-            // Возвращаем текстовый элемент на место
             taskDiv.replaceChild(taskTextElement, inputField);
-            saveTasks(); // Сохраняем изменения
-            displayTasks(tasks); // Обновляем отображение задач
+            saveTasks();
+            displayTasks(tasks);
+
+            // Убираем анимацию после завершения редактирования
+            taskDiv.classList.remove("animate__pulse");
         };
 
-        // Завершаем редактирование при нажатии Enter
         inputField.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 finishEditing();
             }
         });
 
-        // Завершаем редактирование при потере фокуса
         inputField.addEventListener("blur", function () {
             finishEditing();
         });
     });
 
-    // Обработчик клика по кнопке "DELETE"
     deleteButton.addEventListener("click", function (event) {
-        event.stopPropagation(); // Останавливаем всплытие события
-        deleteTask(task.id); // Удаляем задачу
+        event.stopPropagation();
+        deleteTask(task.id);
     });
 
     taskDiv.appendChild(taskTextElement);
@@ -148,6 +151,19 @@ function displayTasks(tasks) {
 }
 
 // Функция для добавления новой задачи
+function deleteTask(taskId) {
+    const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskElement) {
+        // Анимация перед удалением
+        taskElement.classList.add("animate__animated", "animate__fadeOutUp");
+        taskElement.addEventListener("animationend", () => {
+            tasks = tasks.filter((task) => task.id !== taskId);
+            saveTasks();
+            displayTasks(tasks);
+        });
+    }
+}
+
 function addTask(text) {
     const newTask = {
         id: Date.now().toString(),
@@ -156,14 +172,11 @@ function addTask(text) {
     };
     tasks.push(newTask);
     saveTasks();
-    displayTasks(tasks);
-}
 
-// Функция для удаления задачи
-function deleteTask(taskId) {
-    tasks = tasks.filter((task) => task.id !== taskId);
-    saveTasks();
-    displayTasks(tasks);
+    // Анимация для новой задачи
+    const taskElement = createTaskElement(newTask);
+    taskElement.classList.add("animate__animated", "animate__fadeInDown");
+    tasksContainer.appendChild(taskElement);
 }
 
 // Функция для переключения статуса задачи
