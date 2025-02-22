@@ -636,10 +636,6 @@ video {
   overflow: auto;
 }
 
-.overflow-hidden {
-  overflow: hidden;
-}
-
 .rounded-xl {
   border-radius: 0.75rem;
 }
