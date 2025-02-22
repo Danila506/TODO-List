@@ -20,8 +20,8 @@ function saveTasks() {
 
 // Функция для создания элемента задачи
 function createTaskElement(task) {
-    const taskDiv = document.createElement("button");
-    taskDiv.setAttribute("data-task-id", task.id); // Добавляем атрибут
+    const taskDiv = document.createElement("div"); // Используем <div> вместо <button>
+    taskDiv.setAttribute("data-task-id", task.id);
     taskDiv.classList.add(
         "bg-[#101826]",
         "text-white",
@@ -31,7 +31,8 @@ function createTaskElement(task) {
         "mb-2",
         "flex",
         "items-center",
-        "justify-between"
+        "justify-between",
+        "cursor-pointer" // Добавляем курсор, чтобы элемент выглядел кликабельным
     );
 
     const taskTextElement = document.createElement("span");
@@ -49,6 +50,13 @@ function createTaskElement(task) {
         taskDiv.addEventListener("animationend", () => {
             taskDiv.classList.remove("animate__flipInX");
         });
+    });
+
+    // Предотвращаем действие по умолчанию для пробела
+    taskDiv.addEventListener("keydown", function (e) {
+        if (e.key === " ") {
+            e.preventDefault(); // Предотвращаем действие по умолчанию (клик)
+        }
     });
 
     const buttons = document.createElement("div");
@@ -97,6 +105,7 @@ function createTaskElement(task) {
 
         taskDiv.replaceChild(inputField, taskTextElement);
         inputField.focus();
+        inputField.setSelectionRange(0, inputField.value.length); // Выделяем весь текст
 
         let isEditingFinished = false;
 
@@ -120,6 +129,12 @@ function createTaskElement(task) {
         inputField.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 finishEditing();
+            }
+            if (e.key === "Escape") {
+                taskDiv.replaceChild(taskTextElement, inputField); // Отмена редактирования
+            }
+            if (e.key === " ") {
+                e.stopPropagation(); // Останавливаем всплытие
             }
         });
 
