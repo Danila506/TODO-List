@@ -165,7 +165,6 @@ function displayTasks(tasks) {
     });
 }
 
-// Функция для добавления новой задачи
 function deleteTask(taskId) {
     const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
     if (taskElement) {
@@ -178,7 +177,7 @@ function deleteTask(taskId) {
         });
     }
 }
-
+// Функция для добавления новой задачи
 function addTask(text) {
     const newTask = {
         id: Date.now().toString(),
@@ -208,6 +207,29 @@ function toggleComplete(taskId) {
 
 // Получаем массив задач из localStorage
 let tasks = loadTasks();
+const clearAllButton = document.getElementById("clearAllButton");
+
+// Функция для очистки всех задач
+function clearAllTasks() {
+    const taskElements = tasksContainer.querySelectorAll("[data-task-id]");
+
+    // Анимация для каждого элемента
+    taskElements.forEach((taskElement) => {
+        taskElement.classList.add("animate__animated", "animate__fadeOutUp");
+    });
+
+    // Ждем завершения анимации перед удалением
+    setTimeout(() => {
+        tasks = [];
+        saveTasks();
+        displayTasks(tasks);
+    }, 500); // Время должно соответствовать длительности анимации
+}
+
+// Обработчик для кнопки "Clear all"
+clearAllButton.addEventListener("click", function () {
+    clearAllTasks();
+});
 
 // Отображаем задачи на странице при загрузке
 displayTasks(tasks);

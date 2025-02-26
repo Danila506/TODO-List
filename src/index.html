@@ -38,11 +38,20 @@
         </header>
         <main class="max-w-2xl w-full mx-auto my-0 flex-1">
             <section>
-                <h2
-                    class="text-xl tracking-wider text-[#4f5969] font-main mb-4"
-                >
-                    Tasks
-                </h2>
+                <div class="flex justify-between">
+                    <h2
+                        class="text-xl tracking-wider text-[#4f5969] font-main mb-4"
+                    >
+                        Tasks
+                    </h2>
+                    <button
+                        id="clearAllButton"
+                        class="bg-[linear-gradient(to_right,#ec4899,#8b5cf6)] text-[#ec4899] text-transparent bg-clip-text cursor-pointer font-bold hover:opacity-80 transition duration-300"
+                    >
+                        Clear all
+                    </button>
+                </div>
+
                 <div class="flex flex-col justify-between" id="tasks"></div>
             </section>
         </main>
